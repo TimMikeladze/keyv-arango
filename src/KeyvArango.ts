@@ -5,6 +5,7 @@ import { Database } from 'arangojs/database'
 import { aql } from 'arangojs/aql'
 
 export interface KeyvArangoOptions {
+  cacheCollection?: boolean
   collectionName?: string
   config: Config
   expireAfter?: number
@@ -33,13 +34,16 @@ const getCollection = async <T extends object = any>(
 }
 
 export class KeyvArango implements Store<any> {
-  config: Config
-  databaseName: string
-  namespace: string
-  collectionName: string
-  expireAfter: number
-  field: string
-  opts: any = {}
+  private readonly config: Config
+  private readonly databaseName: string
+  private readonly namespace: string
+  private readonly collectionName: string
+  private readonly expireAfter: number
+  private readonly field: string
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  private opts: any = {}
+  private collection: Collection
+  private readonly cacheCollection: boolean
 
   constructor(options: KeyvArangoOptions) {
     this.config = options.config
@@ -48,6 +52,7 @@ export class KeyvArango implements Store<any> {
     this.collectionName = options.collectionName || 'keyv'
     this.expireAfter = options.expireAfter || 0
     this.field = options.field || 'expireDate'
+    this.cacheCollection = options.cacheCollection ?? true
   }
 
   private async getDatabase(): Promise<{
@@ -65,17 +70,24 @@ export class KeyvArango implements Store<any> {
       database = database.database(this.databaseName)
     }
 
-    const collection = await getCollection(database, this.collectionName, [
-      {
-        type: 'persistent',
-        fields: ['key', 'namespace']
-      },
-      {
-        type: 'ttl',
-        fields: [this.field],
-        expireAfter: this.expireAfter
-      }
-    ])
+    const collection =
+      this.cacheCollection && this.collection
+        ? this.collection
+        : await getCollection(database, this.collectionName, [
+            {
+              type: 'persistent',
+              fields: ['key', 'namespace']
+            },
+            {
+              type: 'ttl',
+              fields: [this.field],
+              expireAfter: this.expireAfter
+            }
+          ])
+
+    if (this.cacheCollection && !this.collection) {
+      this.collection = collection
+    }
 
     return {
       collection,

@@ -25,9 +25,10 @@ const options: KeyvArangoOptions = {
     url: process.env.ARANGO_URL
   },
   // All fields below are optional.
+  cacheCollection: true, // whether to cache the collection instance in between data calls. Defaults to true.
+  collectionName: 'keyv', // the name of the collection to use. Defaults to 'keyv'.
   expireAfter: 0, // how long to wait before expiring a key (in milliseconds). Defaults to 0.
   field: 'expireDate', // the name of the field which will store the expiration date. Defaults to 'expireDate'.
-  collectionName: 'keyv', // the name of the collection to use. Defaults to 'keyv'.
   namespace: null // the keyv namespace to use. Defaults to null.
 }
 
