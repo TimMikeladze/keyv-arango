@@ -1,0 +1,94 @@
+{
+  "name": "keyv-arango",
+  "version": "0.0.0",
+  "description": "ArangoDB adapter for Keyv, the simple persistent key-value storage module.",
+  "author": "Tim Mikeladze <tim.mikeladze@gmail.com>",
+  "keywords": [
+    "arango",
+    "arangodb",
+    "firestore",
+    "key-value",
+    "keyv",
+    "persistence",
+    "storage",
+    "cache"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TimMikeladze/keyv-arango.git"
+  },
+  "license": "MIT",
+  "files": [
+    "./dist"
+  ],
+  "source": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "exports": {
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.modern.js"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.module.js",
+  "unpkg": "./dist/index.umd.js",
+  "bin": "./dist/cli.module.js",
+  "scripts": {
+    "dev": "microbundle watch src/{index,cli}.ts --target node -f modern",
+    "build": "rm -rf dist && tsc && microbundle src/{index,cli}.ts --target node",
+    "lint": "eslint --fix {src,__tests__}/**/* && prettier --write .",
+    "test": "yarn build -f cjs && ava",
+    "prepublishOnly": "yarn lint && yarn test && yarn build",
+    "release": "release-it",
+    "commit": "yarn commit-it"
+  },
+  "release-it": {
+    "git": {
+      "commitMessage": "🔖 | v${version}"
+    },
+    "github": {
+      "release": true
+    },
+    "npm": {
+      "publish": false
+    }
+  },
+  "lint-staged": {
+    "*.ts": "eslint --fix",
+    "*": "prettier --write"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "devDependencies": {
+    "@keyv/test-suite": "1.8.8",
+    "@types/jest": "29.2.4",
+    "@types/node": "18.11.13",
+    "@typescript-eslint/eslint-plugin": "5.46.1",
+    "@typescript-eslint/parser": "5.46.1",
+    "arangojs": "8.0.0",
+    "ava": "5.1.0",
+    "commit-it": "0.0.7",
+    "eslint": "8.29.0",
+    "eslint-config-standard": "17.0.0",
+    "eslint-plugin-import": "2.26.0",
+    "eslint-plugin-n": "15.6.0",
+    "eslint-plugin-node": "11.1.0",
+    "eslint-plugin-promise": "6.1.1",
+    "eslint-plugin-typescript-sort-keys": "2.1.0",
+    "husky": "8.0.2",
+    "jest": "29.3.1",
+    "keyv": "4.5.2",
+    "lint-staged": "13.1.0",
+    "microbundle": "0.15.1",
+    "prettier": "2.8.1",
+    "release-it": "15.5.1",
+    "ts-jest": "29.0.3",
+    "typescript": "4.9.4"
+  },
+  "peerDependencies": {
+    "arangojs": ">=7.0.0",
+    "keyv": ">=4.0.0"
+  }
+}
