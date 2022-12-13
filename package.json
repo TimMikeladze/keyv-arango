@@ -1,6 +1,6 @@
 {
   "name": "keyv-arango",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "ArangoDB adapter for Keyv, the simple persistent key-value storage module.",
   "author": "Tim Mikeladze <tim.mikeladze@gmail.com>",
   "keywords": [
