@@ -76,7 +76,8 @@ export class KeyvArango implements Store<any> {
         : await getCollection(database, this.collectionName, [
             {
               type: 'persistent',
-              fields: ['key', 'namespace']
+              fields: ['key', 'namespace'],
+              unique: true
             },
             {
               type: 'ttl',
@@ -127,9 +128,16 @@ export class KeyvArango implements Store<any> {
     }
   }
 
-  public async get(key: string): Promise<any> {
+  private async getDoc(key: string): Promise<{
+    [x: string]: any
+    _id: string
+    _key: string
+    key: string
+    namespace: string | null
+    value: any
+  }> {
     const { database } = await this.getDatabase()
-    const doc = await (
+    return await (
       await database.query(aql`
     FOR doc IN ${database.collection(this.collectionName)}
       ${this.namespaceAql()}
@@ -137,6 +145,10 @@ export class KeyvArango implements Store<any> {
       RETURN doc
     `)
     ).next()
+  }
+
+  public async get(key: string): Promise<any> {
+    const doc = await this.getDoc(key)
 
     return doc?.value
   }
@@ -170,18 +182,26 @@ export class KeyvArango implements Store<any> {
   public async set(key: string, value: any, ttl?: number): Promise<any> {
     const { collection } = await this.getDatabase()
 
+    const found = await this.getDoc(key)
+
     const now = new Date().getTime()
 
     const fieldValue = ttl
       ? parseInt(Number((now + ttl) / 1000).toFixed())
-      : undefined
+      : null
 
-    await collection.save({
+    const data = {
       key,
       value,
       [this.field]: fieldValue,
       namespace: this.namespace
-    })
+    }
+
+    if (found) {
+      await collection.update(found._key, data)
+    } else {
+      await collection.save(data)
+    }
 
     return value
   }
