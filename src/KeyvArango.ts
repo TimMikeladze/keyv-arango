@@ -1,8 +1,8 @@
-import { Collection, CreateCollectionOptions } from 'arangojs/collection'
-import { Config } from 'arangojs/connection'
+import { Collection, CreateCollectionOptions } from 'arangojs/collection.js'
+import { Config } from 'arangojs/connection.js'
 import Keyv, { Store } from 'keyv'
-import { Database } from 'arangojs/database'
-import { aql } from 'arangojs/aql'
+import { Database } from 'arangojs/database.js'
+import { aql } from 'arangojs/aql.js'
 
 export interface KeyvArangoOptions {
   cacheCollection?: boolean
