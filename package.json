@@ -30,10 +30,9 @@
   "main": "./dist/index.cjs",
   "module": "./dist/index.module.js",
   "unpkg": "./dist/index.umd.js",
-  "bin": "./dist/cli.module.js",
   "scripts": {
-    "dev": "microbundle watch src/{index,cli}.ts --target node -f modern",
-    "build": "rm -rf dist && tsc && microbundle src/{index,cli}.ts --target node",
+    "dev": "microbundle watch src/index.ts --target node -f modern",
+    "build": "rm -rf dist && tsc && microbundle src/index.ts --target node",
     "lint": "eslint --fix {src,__tests__}/**/* && prettier --write .",
     "test": "yarn build -f cjs && ava",
     "prepublishOnly": "yarn lint && yarn test && yarn build",
